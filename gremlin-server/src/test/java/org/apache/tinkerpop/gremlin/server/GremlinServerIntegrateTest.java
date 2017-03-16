@@ -109,7 +109,7 @@ import static org.junit.Assert.assertEquals;
 public class GremlinServerIntegrateTest extends AbstractGremlinServerIntegrationTest {
 
     private Log4jRecordingAppender recordingAppender = null;
-    private final Supplier<Graph> graphGetter = () -> server.getServerGremlinExecutor().getGraphManager().getGraphs().get("graph");
+    private final Supplier<Graph> graphGetter = () -> server.getServerGremlinExecutor().getGraphManager().getGraph("graph");
     private final Configuration conf = new BaseConfiguration() {{
         setProperty(Graph.GRAPH, RemoteGraph.class.getName());
         setProperty(GREMLIN_REMOTE_CONNECTION_CLASS, DriverRemoteConnection.class.getName());

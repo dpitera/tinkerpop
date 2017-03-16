@@ -25,28 +25,37 @@ import org.apache.tinkerpop.gremlin.structure.Transaction;
 import javax.script.Bindings;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 public interface GraphManager {
     /**
+     * @Deprecated This returns a {@link Map} that should be immutable. Please refer to
+     * getGraphNames() for replacement.
+     *
      * Get a list of the {@link Graph} instances and their binding names
      *
      * @return a {@link Map} where the key is the name of the {@link Graph} and the value is the {@link Graph} itself
      */
+    @Deprecated
     public Map<String, Graph> getGraphs();
-    
+
+    /**
+     * Get a {@link Set} of {@link String} graphNames corresponding to names stored in the graph's
+     * reference tracker.
+     */
+    public Set<String> getGraphNames();
     /**
      * Get {@link Graph} instance whose name matches {@link gName}
      *
-     * @return {@link Graph} if exists, else null 
+     * @return {@link Graph} if exists, else null
      */
-    public Graph getGraph(String gName);
+    public Graph getGraph(final String gName);
 
     /**
-     * Add {@link Graph} g with name {@link String} gName to 
-     * {@link Map<String, Graph>} returned by call to getGraphs()
+     * Add {@link Graph} g with name {@link String} gName to
+     * {@link Map<String, Graph>}
      */
-    public void addGraph(String gName, Graph g);
+    public void addGraph(final String gName, final Graph g);
 
     /**
      * Get a list of the {@link TraversalSource} instances and their binding names
@@ -61,18 +70,18 @@ public interface GraphManager {
      *
      * @return {@link TraversalSource} if exists, else null
      */
-    
-    public TraversalSource getTraversalSource(String tsName);
+
+    public TraversalSource getTraversalSource(final String tsName);
     /**
      * Get the {@link Graph} and {@link TraversalSource} list as a set of bindings.
      */
-    
+
     /**
-     * Add {@link TraversalSource} ts with name {@link String} tsName to 
+     * Add {@link TraversalSource} ts with name {@link String} tsName to
      * {@link Map<String, TraversalSource>} returned by call to getTraversalSources()
      */
-    public void addTraversalSource(String tsName, TraversalSource ts);
-    
+    public void addTraversalSource(final String tsName, final TraversalSource ts);
+
     public Bindings getAsBindings();
 
     /**
@@ -96,12 +105,17 @@ public interface GraphManager {
     public void commit(final Set<String> graphSourceNamesToCloseTxOn);
 
     /**
-     * Implementation that allows for custom graph-opening implementations.
+     * Implementation that allows for custom graph-opening implementations; if the {@link Map}
+     * tracking graph references has a {@link Graph} object corresponding to the {@link String} graphName,
+     * then we return that {@link Graph}-- otherwise, we use the custom {@link Supplier} to instantiate a
+     * a new {@link Graph}, add it to the {@link Map} tracking graph references, and return said {@link Graph}.
      */
-    public Graph openGraph(String graphName, Supplier<Graph> supplier);
+    public Graph openGraph(final String graphName, final Function<String, Graph> supplier);
 
     /**
-     * Implementation that allows for custom graph-closing implementations.
+     * Implementation that allows for custom graph-closing implementations;
+     * this method should remove the {@link Graph} graph from the {@link Object}
+     * tracking {@link Graph} references.
      */
-    public void closeGraph(Graph graph);
+    public Graph removeGraph(final String graphName) throws Exception;
 }
